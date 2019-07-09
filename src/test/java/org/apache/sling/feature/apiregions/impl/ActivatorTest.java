@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.hooks.resolver.ResolverHookFactory;
 
 import java.io.File;
@@ -35,6 +36,8 @@ import static org.apache.sling.feature.apiregions.impl.RegionEnforcer.FEATURE_RE
 import static org.apache.sling.feature.apiregions.impl.RegionEnforcer.IDBSNVER_FILENAME;
 import static org.apache.sling.feature.apiregions.impl.RegionEnforcer.PROPERTIES_RESOURCE_PREFIX;
 import static org.apache.sling.feature.apiregions.impl.RegionEnforcer.REGION_PACKAGE_FILENAME;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ActivatorTest {
     private Properties savedProps;
@@ -82,5 +85,50 @@ public class ActivatorTest {
                 Mockito.eq(ResolverHookFactory.class),
                 Mockito.isA(RegionEnforcer.class),
                 Mockito.eq(expectedProps));
+    }
+
+    @Test
+    public void testRegistryHookNotEnabled() {
+        BundleContext bc = Mockito.mock(BundleContext.class);
+
+        Activator a = new Activator();
+        a.bundleContext = bc;
+        a.registerHook();
+
+        assertNull(a.hookRegistration);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRegistryHookAlreadyPresent() {
+        BundleContext bc = Mockito.mock(BundleContext.class);
+
+        Activator a = new Activator();
+        a.bundleContext = bc;
+        a.hookRegistration = Mockito.mock(ServiceRegistration.class);
+        a.registerHook();
+
+        assertNotNull(a.hookRegistration);
+        Mockito.verifyZeroInteractions(bc);
+    }
+
+    @Test
+    public void testUnregisterHook() {
+        Activator a = new Activator();
+        a.unregisterHook(); // Should not throw an exception
+        assertNull(a.hookRegistration);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void testUnregisterHook2() {
+        ServiceRegistration reg = Mockito.mock(ServiceRegistration.class);
+
+        Activator a = new Activator();
+        a.hookRegistration = reg;
+
+        a.unregisterHook();
+        Mockito.verify(reg).unregister();
+        assertNull(a.hookRegistration);
     }
 }

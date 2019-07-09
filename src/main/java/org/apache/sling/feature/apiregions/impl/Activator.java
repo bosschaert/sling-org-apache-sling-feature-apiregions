@@ -46,8 +46,8 @@ public class Activator implements BundleActivator, FrameworkListener {
     static final String MANAGED_SERVICE_CLASS_NAME = MANAGED_SERVICE_PKG_NAME + ".ManagedService";
     static final String REGIONS_PROPERTY_NAME = "org.apache.sling.feature.apiregions.regions";
 
-    private BundleContext bundleContext;
-    private ServiceRegistration<ResolverHookFactory> hookRegistration;
+    BundleContext bundleContext;
+    ServiceRegistration<ResolverHookFactory> hookRegistration;
 
     @Override
     public synchronized void start(BundleContext context) throws Exception {
@@ -177,18 +177,4 @@ public class Activator implements BundleActivator, FrameworkListener {
         };
         return cmReq;
     }
-
-    /*
-    private class ConfigurationHandler implements ManagedService {
-        @Override
-        public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
-            Object disabled = properties.get("disable");
-            if ("true".equals(disabled)) {
-                unregisterHook();
-            } else {
-                registerHook();
-            }
-        }
-    }
-    */
 }
