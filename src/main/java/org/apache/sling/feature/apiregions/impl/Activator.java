@@ -93,6 +93,10 @@ public class Activator implements BundleActivator, FrameworkListener {
             bundleContext.removeFrameworkListener(this);
 
             FrameworkWiring fw = bundleContext.getBundle().adapt(FrameworkWiring.class);
+            if (fw == null) {
+                RegionEnforcer.LOG.log(Level.WARNING, "The API Regions runtime fragment is not attached to the system bundle.");
+                return;
+            }
 
             Requirement cmReq = createPackageRequirement();
 
@@ -145,13 +149,14 @@ public class Activator implements BundleActivator, FrameworkListener {
 
                     return; // ManagedService registration successful. Exit method.
                 } catch (Exception e) {
-                    RegionEnforcer.LOG.log(Level.INFO, "Could not load or register ManagedService from " + cap);
+                    RegionEnforcer.LOG.log(Level.WARNING, "Problem attempting to register ManagedService from " + cap, e);
                 }
             }
+            RegionEnforcer.LOG.log(Level.INFO, "No Configuration Admin API available");
         }
     }
 
-    private Requirement createPackageRequirement() {
+    static Requirement createPackageRequirement() {
         Requirement cmReq = new Requirement() {
             @Override
             public String getNamespace() {
