@@ -232,6 +232,6 @@ class RegionEnforcer implements ResolverHookFactory {
     public ResolverHook begin(Collection<BundleRevision> triggers) {
         if (enabledRegions.isEmpty())
             return null;
-        return new ResolverHookImpl(bsnVerMap, bundleFeatureMap, featureRegionMap, regionPackageMap);
+        return new ResolverHookImpl(bsnVerMap, bundleFeatureMap, featureRegionMap, regionPackageMap, enabledRegions);
     }
 }

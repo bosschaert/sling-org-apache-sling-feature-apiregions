@@ -43,13 +43,15 @@ class ResolverHookImpl implements ResolverHook {
     final Map<String, Set<String>> bundleFeatureMap;
     final Map<String, Set<String>> featureRegionMap;
     final Map<String, Set<String>> regionPackageMap;
+    final Set<String> defaultRegions;
 
     ResolverHookImpl(Map<Entry<String, Version>, List<String>> bsnVerMap, Map<String, Set<String>> bundleFeatureMap,
-            Map<String, Set<String>> featureRegionMap, Map<String, Set<String>> regionPackageMap) {
+            Map<String, Set<String>> featureRegionMap, Map<String, Set<String>> regionPackageMap, Set<String> enabledRegions) {
         this.bsnVerMap = bsnVerMap;
         this.bundleFeatureMap = bundleFeatureMap;
         this.featureRegionMap = featureRegionMap;
         this.regionPackageMap = regionPackageMap;
+        this.defaultRegions = enabledRegions;
     }
 
     @Override
@@ -73,6 +75,7 @@ class ResolverHookImpl implements ResolverHook {
         String reqBundleName = reqBundle.getSymbolicName();
         Version reqBundleVersion = reqBundle.getVersion();
 
+//        Set<String> reqRegions = new HashSet<>(defaultRegions);
         Set<String> reqRegions = new HashSet<>();
         List<String> reqFeatures = new ArrayList<>();
         List<String> aids = bsnVerMap.get(new AbstractMap.SimpleEntry<String, Version>(reqBundleName, reqBundleVersion));

@@ -60,7 +60,7 @@ public class ResolverHookImplTest {
 
         Map<String, Set<String>> rpmap = new HashMap<>();
 
-        ResolverHookImpl rh = new ResolverHookImpl(bsnvermap, bfmap, frmap, rpmap);
+        ResolverHookImpl rh = new ResolverHookImpl(bsnvermap, bfmap, frmap, rpmap, Collections.singleton("*"));
 
         // b2 is in r2, it requires a capability that is provided by b1.
         // b1 is not in any region so it can provide access.
@@ -92,7 +92,7 @@ public class ResolverHookImplTest {
         rpmap.put("r1", Collections.singleton("org.apache.sling.test"));
         rpmap.put("r3", Collections.singleton("org.apache.sling.toast"));
 
-        ResolverHookImpl rh = new ResolverHookImpl(bsnvermap, bfmap, frmap, rpmap);
+        ResolverHookImpl rh = new ResolverHookImpl(bsnvermap, bfmap, frmap, rpmap, Collections.singleton(""));
 
         // b2 is in r2, it requires a capability that is provided by b1 in r1. However since b1 is also
         // in r2, r2 inherits all the capabilities provided by regions before r2, which includes r2. So
@@ -158,7 +158,7 @@ public class ResolverHookImplTest {
         rpmap.put(RegionEnforcer.GLOBAL_REGION, Collections.singleton("org.bar.tar"));
         rpmap.put("r3", Collections.singleton("xyz"));
 
-        ResolverHookImpl rh = new ResolverHookImpl(bsnvermap, bfmap, frmap, rpmap);
+        ResolverHookImpl rh = new ResolverHookImpl(bsnvermap, bfmap, frmap, rpmap, Collections.emptySet());
 
         // Check that we can get the capability from another bundle in the same region
         // where that region exports the package
@@ -286,7 +286,7 @@ public class ResolverHookImplTest {
 
         ResolverHookImpl rh = new ResolverHookImpl(
                 Collections.<Map.Entry<String, Version>, List<String>>emptyMap(),
-                Collections.<String, Set<String>>emptyMap(), featureRegionMap, regionPackageMap);
+                Collections.<String, Set<String>>emptyMap(), featureRegionMap, regionPackageMap, Collections.emptySet());
 
         assertEquals(Collections.emptyList(), rh.getRegionsForPackage(null, "f1"));
         assertEquals(Collections.emptyList(), rh.getRegionsForPackage("org.foo", "f1"));

@@ -45,6 +45,7 @@ public class Activator implements BundleActivator, FrameworkListener {
     static final String MANAGED_SERVICE_PKG_NAME = "org.osgi.service.cm";
     static final String MANAGED_SERVICE_CLASS_NAME = MANAGED_SERVICE_PKG_NAME + ".ManagedService";
     static final String REGIONS_PROPERTY_NAME = "org.apache.sling.feature.apiregions.regions";
+//    static final String DEFAULT_REGIONS = "org.apache.sling.feature.apiregions.default";
 
     BundleContext bundleContext;
     ServiceRegistration<ResolverHookFactory> hookRegistration;
@@ -68,8 +69,10 @@ public class Activator implements BundleActivator, FrameworkListener {
             return; // There is already a hook, no need to re-register
 
         String regions = bundleContext.getProperty(REGIONS_PROPERTY_NAME);
-        if (regions == null)
+        if (regions == null) {
+            RegionEnforcer.LOG.log(Level.WARNING, "API Regions not enabled. To enable set framework property: " + REGIONS_PROPERTY_NAME);
             return; // Component not enabled
+        }
 
         Dictionary<String, Object> props = new Hashtable<>();
         try {
