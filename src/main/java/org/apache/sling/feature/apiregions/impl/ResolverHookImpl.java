@@ -46,12 +46,12 @@ class ResolverHookImpl implements ResolverHook {
     final Set<String> defaultRegions;
 
     ResolverHookImpl(Map<Entry<String, Version>, List<String>> bsnVerMap, Map<String, Set<String>> bundleFeatureMap,
-            Map<String, Set<String>> featureRegionMap, Map<String, Set<String>> regionPackageMap, Set<String> enabledRegions) {
+            Map<String, Set<String>> featureRegionMap, Map<String, Set<String>> regionPackageMap, Set<String> defaultRegions) {
         this.bsnVerMap = bsnVerMap;
         this.bundleFeatureMap = bundleFeatureMap;
         this.featureRegionMap = featureRegionMap;
         this.regionPackageMap = regionPackageMap;
-        this.defaultRegions = enabledRegions;
+        this.defaultRegions = defaultRegions;
     }
 
     @Override
