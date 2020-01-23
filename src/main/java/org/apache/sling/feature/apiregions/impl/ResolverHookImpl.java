@@ -151,7 +151,7 @@ class ResolverHookImpl implements ResolverHook {
                 }
 
                 Set<String> capRegions = featureRegionMap.get(capFeat);
-                if (capRegions == null) {
+                if (capRegions == null || capRegions.size() == 0) {
                     // If the feature hosting the capability has no regions defined, everyone can access
                     coveredCaps.add(bc);
                     continue nextCapability;
