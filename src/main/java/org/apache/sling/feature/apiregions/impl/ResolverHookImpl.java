@@ -219,16 +219,13 @@ class ResolverHookImpl implements ResolverHook {
         }
     }
 
-    /**
-     * From the capabilities,
-     * @param reqRegions
-     * @param coveredCaps
-     */
     /*
-     * If reqRegions is empty or just the global region, do nothing
-     * Otherwise, if selectedCaps contains a capability with an overlapping region, then remove
-     * other capabilities that don't overlap in region.
-     * Capabilities from bundle 0 should always be retained.
+     * If there are multiple choices of capabilities and some of the capabilities are in the global
+     * region while others are in another named region, take out the capabilities from the global
+     * region so that the requirement gets wired to the more 'specifc' one than the global one.
+     * Capabilities from bundle 0 (the system bundle), the same bundle as the requirer and from the
+     * same feature as the requirer should always be kept. These are marked in the capMap with a
+     * {@code null} region value.
      */
     private void pruneCoveredCaps(Set<String> reqRegions, Map<BundleCapability,String> capMap) {
         Set<String> reqNonGlobalRegions = new HashSet<>(reqRegions);
