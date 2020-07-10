@@ -18,17 +18,16 @@
  */
 package org.apache.sling.feature.apiregions.impl;
 
-import static org.apache.sling.feature.apiregions.impl.RegionConstants.APIREGIONS_JOINGLOBAL;
-import static org.apache.sling.feature.apiregions.impl.RegionConstants.BUNDLE_FEATURE_FILENAME;
-import static org.apache.sling.feature.apiregions.impl.RegionConstants.DEFAULT_REGIONS;
-import static org.apache.sling.feature.apiregions.impl.RegionConstants.FEATURE_REGION_FILENAME;
-import static org.apache.sling.feature.apiregions.impl.RegionConstants.IDBSNVER_FILENAME;
-import static org.apache.sling.feature.apiregions.impl.RegionConstants.PROPERTIES_FILE_LOCATION;
-import static org.apache.sling.feature.apiregions.impl.RegionConstants.PROPERTIES_RESOURCE_PREFIX;
-import static org.apache.sling.feature.apiregions.impl.RegionConstants.REGION_PACKAGE_FILENAME;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Version;
+import org.osgi.framework.hooks.resolver.ResolverHook;
+import org.osgi.framework.namespace.PackageNamespace;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRequirement;
+import org.osgi.framework.wiring.BundleRevision;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,16 +45,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Version;
-import org.osgi.framework.hooks.resolver.ResolverHook;
-import org.osgi.framework.namespace.PackageNamespace;
-import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleRequirement;
-import org.osgi.framework.wiring.BundleRevision;
+import static org.apache.sling.feature.apiregions.impl.RegionConstants.APIREGIONS_JOINGLOBAL;
+import static org.apache.sling.feature.apiregions.impl.RegionConstants.BUNDLE_FEATURE_FILENAME;
+import static org.apache.sling.feature.apiregions.impl.RegionConstants.DEFAULT_REGIONS;
+import static org.apache.sling.feature.apiregions.impl.RegionConstants.FEATURE_REGION_FILENAME;
+import static org.apache.sling.feature.apiregions.impl.RegionConstants.IDBSNVER_FILENAME;
+import static org.apache.sling.feature.apiregions.impl.RegionConstants.PROPERTIES_FILE_LOCATION;
+import static org.apache.sling.feature.apiregions.impl.RegionConstants.PROPERTIES_RESOURCE_PREFIX;
+import static org.apache.sling.feature.apiregions.impl.RegionConstants.REGION_PACKAGE_FILENAME;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class RegionConfigurationTest {
     @Test
@@ -567,8 +567,9 @@ public class RegionConfigurationTest {
         }
     }
 
-    private void assertMapUnmodifiable(Map<String, Set<String>> m) {
-        Map.Entry<String, Set<String>> entry = m.entrySet().iterator().next();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private void assertMapUnmodifiable(Map<String, ? extends Set<String>> m) {
+        Map.Entry<String, ? extends Set<String>> entry = m.entrySet().iterator().next();
         try {
             Set<String> s = entry.getValue();
             s.add("testing");
@@ -578,7 +579,8 @@ public class RegionConfigurationTest {
         }
 
         try {
-            m.put("foo", Collections.<String>emptySet());
+            Map m2 = m;
+            m2.put("foo", Collections.<String>emptySet());
             fail("Adding a new value should have thrown an exception");
         } catch (Exception ex) {
             // good

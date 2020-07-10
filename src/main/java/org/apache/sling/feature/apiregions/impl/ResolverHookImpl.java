@@ -139,7 +139,7 @@ class ResolverHookImpl implements ResolverHook {
                 }
                 bcFeatureMap.put(bc, capFeat);
 
-                List<String> sharedRegions = new ArrayList<>(reqRegions);
+                List<String> sharedRegions = new ArrayList<>(getRegionsAndAncestors(reqRegions));
                 sharedRegions.retainAll(capRegions);
 
                 // Look at specific regions first as they take precedence over the global region
@@ -198,6 +198,30 @@ class ResolverHookImpl implements ResolverHook {
                     "API-Regions removed candidates {0} for requirement {1} as the requirement is in the following regions: {2} and in feature: {3}",
                     new Object[] {sb, requirement, reqRegions, reqFeatures});
         }
+    }
+
+    // Get the a set of the regions plus their ancestors. They are obtained from the global region order.
+    private Set<String> getRegionsAndAncestors(Set<String> regions) {
+        Set<String> s = new HashSet<>();
+
+        for (String region : regions) {
+            s.add(region);
+
+            if (configuration.globalRegionOrder != null) {
+                if (configuration.globalRegionOrder.contains(region)) {
+                    for (String r : configuration.globalRegionOrder) {
+                        if (r.equals(region)) {
+                            break;
+                        }
+                        s.add(r);
+                    }
+                } else {
+                    Activator.LOG.log(Level.WARNING, "Global API Region order " + configuration.globalRegionOrder +
+                            " does not contain region: " + region);
+                }
+            }
+        }
+        return s;
     }
 
     /**
