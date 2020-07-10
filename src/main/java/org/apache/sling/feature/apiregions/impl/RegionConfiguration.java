@@ -40,7 +40,6 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,6 +47,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 class RegionConfiguration {
@@ -56,7 +56,7 @@ class RegionConfiguration {
 
     volatile Map<Map.Entry<String, Version>, List<String>> bsnVerMap;
     volatile Map<String, Set<String>> bundleFeatureMap;
-    volatile Map<String, LinkedHashSet<String>> featureRegionMap;
+    volatile Map<String, List<String>> featureRegionMap;
     volatile Map<String, Set<String>> regionPackageMap;
 
     final Set<String> defaultRegions;
@@ -66,7 +66,7 @@ class RegionConfiguration {
 
     private final Map<Map.Entry<String, Version>, List<String>> baseBsnVerMap;
     private final Map<String, Set<String>> baseBundleFeatureMap;
-    private final Map<String, LinkedHashSet<String>> baseFeatureRegionMap;
+    private final Map<String, List<String>> baseFeatureRegionMap;
     private final Map<String, Set<String>> baseRegionPackageMap;
     private final List<String> globalRegionOrder;
 
@@ -80,14 +80,14 @@ class RegionConfiguration {
     private final String toGlobalConfig;
 
     RegionConfiguration(Map<Entry<String, Version>, List<String>> bsnVerMap, Map<String, Set<String>> bundleFeatureMap,
-                        Map<String, LinkedHashSet<String>> featureRegionMap, Map<String, Set<String>> regionPackageMap, Set<String> defaultRegions) {
+                        Map<String, List<String>> featureRegionMap, Map<String, Set<String>> regionPackageMap, Set<String> defaultRegions) {
         this.defaultRegions = defaultRegions;
 
         this.baseBsnVerMap = new HashMap<>(bsnVerMap);
         this.baseBundleFeatureMap = new HashMap<>(bundleFeatureMap);
         this.baseFeatureRegionMap = new HashMap<>(featureRegionMap);
         this.baseRegionPackageMap = new HashMap<>(regionPackageMap);
-        this.globalRegionOrder = new ArrayList<>(this.baseFeatureRegionMap.getOrDefault(REGION_ORDER, new LinkedHashSet<>()));
+        this.globalRegionOrder = new ArrayList<>(this.baseFeatureRegionMap.getOrDefault(REGION_ORDER, Collections.emptyList()));
         this.baseFeatureRegionMap.remove(REGION_ORDER);
 
         this.toGlobalConfig = null;
@@ -110,7 +110,7 @@ class RegionConfiguration {
         URI featuresFile = getDataFileURI(context, RegionConstants.FEATURE_REGION_FILENAME);
         // Register the location as a service property for diagnostic purposes
         regProps.put(RegionConstants.FEATURE_REGION_FILENAME, featuresFile.toString());
-        Map<String, LinkedHashSet<String>> frm = populateFeatureRegionMap(featuresFile);
+        Map<String, List<String>> frm = populateFeatureRegionMap(featuresFile);
 
         URI regionsFile = getDataFileURI(context, RegionConstants.REGION_PACKAGE_FILENAME);
         // Register the location as a service property for diagnostic purposes
@@ -122,7 +122,7 @@ class RegionConfiguration {
         this.baseBundleFeatureMap = bfm;
         this.baseFeatureRegionMap = frm;
         this.baseRegionPackageMap = rpm;
-        this.globalRegionOrder = new ArrayList<>(this.baseFeatureRegionMap.getOrDefault(REGION_ORDER, new LinkedHashSet<>()));
+        this.globalRegionOrder = new ArrayList<>(this.baseFeatureRegionMap.getOrDefault(REGION_ORDER, Collections.emptyList()));
         this.baseFeatureRegionMap.remove(REGION_ORDER);
 
         this.toGlobalConfig = context.getProperty(RegionConstants.APIREGIONS_JOINGLOBAL);
@@ -212,7 +212,7 @@ class RegionConfiguration {
     private synchronized void updateConfiguration() {
         final Map<Entry<String, Version>, List<String>> bvm = cloneMapOfLists(this.baseBsnVerMap);
         final Map<String, Set<String>> bfm = cloneMapOfSets(this.baseBundleFeatureMap);
-        final Map<String, LinkedHashSet<String>> frm = cloneMapOfSets(this.baseFeatureRegionMap);
+        final Map<String, List<String>> frm = cloneMapOfSets(this.baseFeatureRegionMap);
         final Map<String, Set<String>> rpm = cloneMapOfSets(this.baseRegionPackageMap);
 
         // apply configurations
@@ -233,19 +233,19 @@ class RegionConfiguration {
             // bundle id to features
             valObj = props.get(RegionConstants.PROP_bundleFeatures);
             if ( valObj != null ) {
-                handleMapConfig(valObj, bfm);
+                handleMapConfig(valObj, bfm, HashSet::new);
             }
 
             // feature id to regions
             valObj = props.get(RegionConstants.PROP_featureRegions);
             if ( valObj != null ) {
-                handleMapConfig(valObj, frm);
+                handleMapConfig(valObj, frm, ArrayList::new);
             }
 
             // region to packages
             valObj = props.get(RegionConstants.PROP_regionPackage);
             if ( valObj != null ) {
-                handleMapConfig(valObj, rpm);
+                handleMapConfig(valObj, rpm, HashSet::new);
             }
         }
 
@@ -257,16 +257,16 @@ class RegionConfiguration {
         // Make all maps and their contents unmodifiable
         bsnVerMap = unmodifiableMapToList(bvm);
         bundleFeatureMap = unmodifiableMapToSet(bfm);
-        featureRegionMap = unmodifiableMapToSet(frm);
+        featureRegionMap = unmodifiableMapToList(frm);
         regionPackageMap = unmodifiableMapToSet(rpm);
     }
 
-    private void handleMapConfig(Object valObj, Map<String, ? extends Set<String>> map) {
+    private <T extends Collection<String>> void handleMapConfig(Object valObj, Map<String, T> map, Supplier<T> constructor) {
         for(final String val : convert(valObj)) {
             final String[] parts = val.split("=");
             final String n = parts[0];
             final String[] features = parts[1].split(",");
-            addValuesToMap(map, n, Arrays.asList(features));
+            addValuesToMap(map, n, Arrays.asList(features), constructor);
         }
     }
 
@@ -278,13 +278,18 @@ class RegionConfiguration {
         return newMap;
     }
 
-    private static <K,V extends Set<String>,M extends Map<K,V>> M cloneMapOfSets(M m) {
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static <K,V extends Collection<String>,M extends Map<K,V>> M cloneMapOfSets(M m) {
         final M newMap = (M) new HashMap();
 
         for (Map.Entry<K,V> entry : m.entrySet()) {
-            @SuppressWarnings("unchecked")
-            V v = (V) new LinkedHashSet<String>(entry.getValue());
+            V v;
+            V val = entry.getValue();
+            if (val instanceof Set) {
+                v = (V) new HashSet(val);
+            } else {
+                v = (V) new ArrayList(val);
+            }
             newMap.put(entry.getKey(), v);
         }
         return newMap;
@@ -311,7 +316,7 @@ class RegionConfiguration {
             if (packages == null)
                 continue;
 
-            addValuesToMap(rpm, RegionConstants.GLOBAL_REGION, packages);
+            addValuesToMap(rpm, RegionConstants.GLOBAL_REGION, packages, HashSet::new);
             rpm.remove(region);
         }
     }
@@ -348,18 +353,18 @@ class RegionConfiguration {
     }
 
     private static Map<String, Set<String>> populateBundleFeatureMap(URI bundlesFile) throws IOException {
-        return loadMap(bundlesFile);
+        return loadMap(bundlesFile, HashSet::new);
     }
 
-    private static Map<String, LinkedHashSet<String>> populateFeatureRegionMap(URI featuresFile) throws IOException {
-        return loadMap(featuresFile);
+    private static Map<String, List<String>> populateFeatureRegionMap(URI featuresFile) throws IOException {
+        return loadMap(featuresFile, ArrayList::new);
     }
 
     private static Map<String, Set<String>> populateRegionPackageMap(URI regionsFile) throws IOException {
-        return loadMap(regionsFile);
+        return loadMap(regionsFile, HashSet::new);
     }
 
-    private static <T extends Set<String>> Map<String, T> loadMap(URI propsFile) throws IOException {
+    private static <T extends Collection<String>> Map<String, T> loadMap(URI propsFile, Supplier<T> constructor) throws IOException {
         Map<String, T> m = new HashMap<>();
 
         Properties p = new Properties();
@@ -369,17 +374,16 @@ class RegionConfiguration {
 
         for (String n : p.stringPropertyNames()) {
             String[] values = p.getProperty(n).split(",");
-            addValuesToMap(m, n, Arrays.asList(values));
+            addValuesToMap(m, n, Arrays.asList(values), constructor);
         }
 
         return m;
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T extends Set<String>> void addValuesToMap(Map<String, T> map, String key, Collection<String> values) {
+    private static <T extends Collection<String>> void addValuesToMap(Map<String, T> map, String key, Collection<String> values, Supplier<T> constructor) {
         T bf = map.get(key);
         if (bf == null) {
-            bf = (T) new LinkedHashSet<String>(); // It's important that the insertion order is maintained.
+            bf = constructor.get();
             map.put(key, bf);
         }
         bf.addAll(values);
@@ -440,7 +444,7 @@ class RegionConfiguration {
         return bundleFeatureMap;
     }
 
-    public Map<String, LinkedHashSet<String>> getFeatureRegionMap() {
+    public Map<String, List<String>> getFeatureRegionMap() {
         return featureRegionMap;
     }
 

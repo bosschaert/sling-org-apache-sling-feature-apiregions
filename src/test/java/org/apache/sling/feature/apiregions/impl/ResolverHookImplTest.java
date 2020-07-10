@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -55,9 +54,9 @@ public class ResolverHookImplTest {
         bfmap.put("b1", Collections.singleton("f1"));
         bfmap.put("b2", Collections.singleton("f2"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f2", new LinkedHashSet<>(Collections.singleton("r2")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "r2")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f2", Collections.singletonList("r2"));
+        frmap.put("__region.order__", Arrays.asList("global", "r2"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
 
@@ -83,9 +82,9 @@ public class ResolverHookImplTest {
         Map<String, Set<String>> bfmap = new HashMap<>();
         bfmap.put("b2", Collections.singleton("f2"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f2", new LinkedHashSet<>(Collections.singleton("r2")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "r2")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f2", Collections.singletonList("r2"));
+        frmap.put("__region.order__", Arrays.asList("global", "r2"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
 
@@ -112,10 +111,10 @@ public class ResolverHookImplTest {
         bfmap.put("b1", Collections.singleton("f1"));
         bfmap.put("b2", Collections.singleton("f2"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f1", new LinkedHashSet<>(Collections.emptySet()));
-        frmap.put("f2", new LinkedHashSet<>(Collections.singleton("r2")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "r2")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f1", Collections.emptyList());
+        frmap.put("f2", Collections.singletonList("r2"));
+        frmap.put("__region.order__", Arrays.asList("global", "r2"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
 
@@ -142,10 +141,10 @@ public class ResolverHookImplTest {
         bfmap.put("b1", Collections.singleton("f1"));
         bfmap.put("b2", Collections.singleton("f2"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f1", new LinkedHashSet<>(Collections.singleton("r2")));
-        frmap.put("f2", new LinkedHashSet<>(Collections.singleton("r2")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "r2")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f1", Collections.singletonList("r2"));
+        frmap.put("f2", Collections.singletonList("r2"));
+        frmap.put("__region.order__", Arrays.asList("global", "r2"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
 
@@ -178,11 +177,11 @@ public class ResolverHookImplTest {
         bfmap.put("b11", Collections.singleton("f11"));
         bfmap.put("b2", Collections.singleton("f2"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f10", new LinkedHashSet<>(Arrays.asList("r2", "r3")));
-        frmap.put("f11", new LinkedHashSet<>(Arrays.asList("r1", "r2")));
-        frmap.put("f2", new LinkedHashSet<>(Collections.singleton("r1")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "r1", "r2", "r3", "r4")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f10", Arrays.asList("r2", "r3"));
+        frmap.put("f11", Arrays.asList("r1", "r2"));
+        frmap.put("f2", Collections.singletonList("r1"));
+        frmap.put("__region.order__", Arrays.asList("global", "r1", "r2", "r3", "r4"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
         rpmap.put("r1", Collections.singleton("org.foo.bar"));
@@ -227,10 +226,10 @@ public class ResolverHookImplTest {
         bfmap.put("b11", Collections.singleton("f11"));
         bfmap.put("b2", Collections.singleton("f2"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f10", new LinkedHashSet<>(Arrays.asList("r2", "r3")));
-        frmap.put("f11", new LinkedHashSet<>(Arrays.asList("r1", "r2")));
-        frmap.put("f2", new LinkedHashSet<>(Collections.singleton("r1")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f10", Arrays.asList("r2", "r3"));
+        frmap.put("f11", Arrays.asList("r1", "r2"));
+        frmap.put("f2", Collections.singletonList("r1"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
         rpmap.put("r1", Collections.singleton("org.foo.bar"));
@@ -269,9 +268,9 @@ public class ResolverHookImplTest {
         Map<String, Set<String>> bfmap = new HashMap<>();
         bfmap.put("b1", Collections.singleton("f1"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f1", new LinkedHashSet<>(Collections.emptySet()));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "r1")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f1", Collections.emptyList());
+        frmap.put("__region.order__", Arrays.asList("global", "r1"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
 
@@ -302,9 +301,9 @@ public class ResolverHookImplTest {
         bfmap.put("b11", Collections.singleton("f1"));
         bfmap.put("b2", Collections.singleton("f1"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f1", new LinkedHashSet<>(Collections.singleton("r1")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "r1")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f1", Collections.singletonList("r1"));
+        frmap.put("__region.order__", Arrays.asList("global", "r1"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
         rpmap.put("r1", Collections.emptySet());
@@ -340,9 +339,9 @@ public class ResolverHookImplTest {
         bfmap.put("b99", Collections.singleton("f1"));
         bfmap.put("b101", Collections.singleton("f1"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f1", new LinkedHashSet<>(Arrays.asList("r1", "global")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "r1")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f1", Arrays.asList("r1", "global"));
+        frmap.put("__region.order__", Arrays.asList("global", "r1"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
         rpmap.put("r1", Collections.singleton("org.blah.blah"));
@@ -380,10 +379,10 @@ public class ResolverHookImplTest {
         bfmap.put("b10", Collections.singleton("f10"));
         bfmap.put("b2", Collections.singleton("f2"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f10", new LinkedHashSet<>(Arrays.asList("r2", "r3")));
-        frmap.put("f2", new LinkedHashSet<>(Collections.singleton("r1")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "r1", "r2", "r3")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f10", Arrays.asList("r2", "r3"));
+        frmap.put("f2", Collections.singletonList("r1"));
+        frmap.put("__region.order__", Arrays.asList("global", "r1", "r2", "r3"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
         rpmap.put("r1", Collections.emptySet());
@@ -420,7 +419,7 @@ public class ResolverHookImplTest {
                 "requiring.bundle", new Version(1,0,0)), Collections.singletonList("b2"));
 
         Map<String, Set<String>> bfmap = new HashMap<>();
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
+        Map<String, List<String>> frmap = new HashMap<>();
         Map<String, Set<String>> rpmap = new HashMap<>();
 
         ResolverHookImpl rh = new ResolverHookImpl(new RegionConfiguration(bsnvermap, bfmap, frmap, rpmap, Collections.singleton("global")));
@@ -469,13 +468,13 @@ public class ResolverHookImplTest {
         bfmap.put("b19", Collections.singleton("f3"));
         bfmap.put("b20", Collections.singleton("f4"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f", new LinkedHashSet<>(Arrays.asList("r1", "r2", RegionConstants.GLOBAL_REGION)));
-        frmap.put("f1", new LinkedHashSet<>(Collections.singleton("r1")));
-        frmap.put("f2", new LinkedHashSet<>(Collections.singleton("r2")));
-        frmap.put("f3", new LinkedHashSet<>(Collections.singleton("r3")));
-        frmap.put("f4", new LinkedHashSet<>(Collections.singleton("r3")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "r1", "r2", "r3")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f", Arrays.asList("r1", "r2", RegionConstants.GLOBAL_REGION));
+        frmap.put("f1", Collections.singletonList("r1"));
+        frmap.put("f2", Collections.singletonList("r2"));
+        frmap.put("f3", Collections.singletonList("r3"));
+        frmap.put("f4", Collections.singletonList("r3"));
+        frmap.put("__region.order__", Arrays.asList("global", "r1", "r2", "r3"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
         rpmap.put("r0", Collections.singleton("org.bar"));
@@ -609,12 +608,10 @@ public class ResolverHookImplTest {
         bfmap.put("b1", Collections.singleton("f1"));
         bfmap.put("b2", Collections.singleton("f2"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f1", new LinkedHashSet<>(Arrays.asList(
-                RegionConstants.GLOBAL_REGION, "org.foo.blah")));
-        frmap.put("f2", new LinkedHashSet<>(Arrays.asList("org.foo.bar",
-                RegionConstants.GLOBAL_REGION, "org.foo.blah")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "org.foo.blah", "org.foo.bar")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f1", Arrays.asList(RegionConstants.GLOBAL_REGION, "org.foo.blah"));
+        frmap.put("f2", Arrays.asList("org.foo.bar", RegionConstants.GLOBAL_REGION, "org.foo.blah"));
+        frmap.put("__region.order__", Arrays.asList("global", "org.foo.blah", "org.foo.bar"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
         rpmap.put("org.foo.bar", Collections.singleton("org.test"));
@@ -632,8 +629,8 @@ public class ResolverHookImplTest {
 
     @Test
     public void testGetRegionsForPackage() {
-        LinkedHashSet<String> regions = new LinkedHashSet<>(Arrays.asList("r1", "r2", "r3"));
-        Map<String, LinkedHashSet<String>> featureRegionMap = Collections.singletonMap("f2", regions);
+        List<String> regions = Arrays.asList("r1", "r2", "r3");
+        Map<String, List<String>> featureRegionMap = Collections.singletonMap("f2", regions);
         Map<String, Set<String>> regionPackageMap = new HashMap<>();
 
         regionPackageMap.put("r2", Collections.singleton("a.b.c"));
@@ -669,10 +666,10 @@ public class ResolverHookImplTest {
         bfmap.put("b98", Collections.singleton("f2"));
         bfmap.put("b100", Collections.singleton("f1"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("f1", new LinkedHashSet<>(Collections.singleton("r1")));
-        frmap.put("f2", new LinkedHashSet<>(Collections.singleton("r2")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "r0", "r1", "r2", "r3")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("f1", Collections.singletonList("r1"));
+        frmap.put("f2", Collections.singletonList("r2"));
+        frmap.put("__region.order__", Arrays.asList("global", "r0", "r1", "r2", "r3"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
         rpmap.put("r1", Collections.singleton("org.test"));
@@ -776,10 +773,10 @@ public class ResolverHookImplTest {
         bfmap.put("b1", Collections.singleton("g:f1:1"));
         bfmap.put("b2", Collections.singleton("g:f2:1"));
 
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
-        frmap.put("g:f1:1", new LinkedHashSet<>(Arrays.asList("deprecated", "internal")));
-        frmap.put("g:f2:1", new LinkedHashSet<>(Collections.singleton("internal")));
-        frmap.put("__region.order__", new LinkedHashSet<>(Arrays.asList("global", "deprecated", "internal")));
+        Map<String, List<String>> frmap = new HashMap<>();
+        frmap.put("g:f1:1", Arrays.asList("deprecated", "internal"));
+        frmap.put("g:f2:1", Collections.singletonList("internal"));
+        frmap.put("__region.order__", Arrays.asList("global", "deprecated", "internal"));
 
         Map<String, Set<String>> rpmap = new HashMap<>();
         rpmap.put("internal", Collections.singleton("xyz"));
@@ -805,7 +802,7 @@ public class ResolverHookImplTest {
         bsnvermap.put(new AbstractMap.SimpleEntry<String,Version>(
                 "b1", new Version(1,0,0)), Collections.singletonList("b1"));
         Map<String, Set<String>> bfmap = new HashMap<>();
-        Map<String, LinkedHashSet<String>> frmap = new HashMap<>();
+        Map<String, List<String>> frmap = new HashMap<>();
         Map<String, Set<String>> rpmap = new HashMap<>();
 
         ResolverHookImpl rh = new ResolverHookImpl(new RegionConfiguration(bsnvermap, bfmap, frmap, rpmap, Collections.singleton("global")));

@@ -36,6 +36,7 @@ import java.net.URISyntaxException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashSet;
@@ -194,9 +195,9 @@ public class RegionConfigurationTest {
 
         RegionConfiguration re = new RegionConfiguration(ctx);
         assertEquals(2, re.featureRegionMap.size());
-        assertEquals(Collections.singleton("global"),
+        assertEquals(Collections.singletonList("global"),
                 re.featureRegionMap.get("an.other:feature:123"));
-        assertEquals(new HashSet<>(Arrays.asList("global", "internal")),
+        assertEquals(Arrays.asList("global", "internal"),
                 re.featureRegionMap.get("org.sling:something:1.2.3"));
         assertEquals(f,  re.getRegistrationProperties().get(FEATURE_REGION_FILENAME));
     }
@@ -218,18 +219,18 @@ public class RegionConfigurationTest {
         re.setConfig("new.config", props);
 
         assertEquals(3, re.featureRegionMap.size());
-        assertEquals(Collections.singleton("newregion"),
+        assertEquals(Collections.singletonList("newregion"),
                 re.featureRegionMap.get("fg1:fa1:3.0"));
-        assertEquals(Collections.singleton("global"),
+        assertEquals(Collections.singletonList("global"),
                 re.featureRegionMap.get("an.other:feature:123"));
-        assertEquals(new HashSet<>(Arrays.asList("global", "internal")),
+        assertEquals(Arrays.asList("global", "internal"),
                 re.featureRegionMap.get("org.sling:something:1.2.3"));
 
         re.removeConfig("new.config");
         assertEquals(2, re.featureRegionMap.size());
-        assertEquals(Collections.singleton("global"),
+        assertEquals(Collections.singletonList("global"),
                 re.featureRegionMap.get("an.other:feature:123"));
-        assertEquals(new HashSet<>(Arrays.asList("global", "internal")),
+        assertEquals(Arrays.asList("global", "internal"),
                 re.featureRegionMap.get("org.sling:something:1.2.3"));
     }
 
@@ -582,10 +583,10 @@ public class RegionConfigurationTest {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void assertMapUnmodifiable(Map<String, ? extends Set<String>> m) {
-        Map.Entry<String, ? extends Set<String>> entry = m.entrySet().iterator().next();
+    private void assertMapUnmodifiable(Map<String, ? extends Collection<String>> m) {
+        Map.Entry<String, ? extends Collection<String>> entry = m.entrySet().iterator().next();
         try {
-            Set<String> s = entry.getValue();
+            Collection<String> s = entry.getValue();
             s.add("testing");
             fail("Changing a value should have thrown an exception");
         } catch (Exception ex) {

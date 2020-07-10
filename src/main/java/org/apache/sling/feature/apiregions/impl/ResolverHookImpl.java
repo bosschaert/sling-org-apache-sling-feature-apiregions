@@ -78,7 +78,7 @@ class ResolverHookImpl implements ResolverHook {
         Set<String> bareReqRegions = null; // Null means: not opting into API Regions
         Set<String> reqFeatures = getFeaturesForBundle(reqBundle);
         for (String feature : reqFeatures) {
-            Set<String> fr = this.configuration.getFeatureRegionMap().get(feature);
+            List<String> fr = this.configuration.getFeatureRegionMap().get(feature);
             if (fr != null) {
                 if (bareReqRegions == null)
                     bareReqRegions = new HashSet<>();
@@ -131,7 +131,7 @@ class ResolverHookImpl implements ResolverHook {
                     continue nextCapability;
                 }
 
-                Set<String> capRegions = this.configuration.getFeatureRegionMap().get(capFeat);
+                List<String> capRegions = this.configuration.getFeatureRegionMap().get(capFeat);
                 if (capRegions == null || capRegions.size() == 0) {
                     // If the feature hosting the capability has no regions defined, everyone can access
                     coveredCaps.put(bc, RegionConstants.GLOBAL_REGION);
@@ -229,7 +229,7 @@ class ResolverHookImpl implements ResolverHook {
      * @return If the feature exports to the global region and the package is exported into the global region
      */
     private boolean isInGlobalRegion(String packageName, String capFeat) {
-        Set<String> capRegions = this.configuration.getFeatureRegionMap().get(capFeat);
+        List<String> capRegions = this.configuration.getFeatureRegionMap().get(capFeat);
         if (capRegions != null && capRegions.contains(RegionConstants.GLOBAL_REGION)) {
             Set<String> globalPackages = this.configuration.getRegionPackageMap().get(RegionConstants.GLOBAL_REGION);
             if (globalPackages.contains(packageName)) {
@@ -333,7 +333,7 @@ class ResolverHookImpl implements ResolverHook {
         if (packageName == null)
             return Collections.emptyList();
 
-        Set<String> regions = this.configuration.getFeatureRegionMap().get(feature);
+        List<String> regions = this.configuration.getFeatureRegionMap().get(feature);
         if (regions == null)
             return Collections.emptyList();
 
