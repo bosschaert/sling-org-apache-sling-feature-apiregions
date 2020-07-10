@@ -18,6 +18,14 @@
  */
 package org.apache.sling.feature.apiregions.impl;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Version;
+import org.osgi.framework.hooks.resolver.ResolverHook;
+import org.osgi.framework.namespace.PackageNamespace;
+import org.osgi.framework.wiring.BundleCapability;
+import org.osgi.framework.wiring.BundleRequirement;
+import org.osgi.framework.wiring.BundleRevision;
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,14 +38,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-
-import org.osgi.framework.Bundle;
-import org.osgi.framework.Version;
-import org.osgi.framework.hooks.resolver.ResolverHook;
-import org.osgi.framework.namespace.PackageNamespace;
-import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleRequirement;
-import org.osgi.framework.wiring.BundleRevision;
 
 class ResolverHookImpl implements ResolverHook {
 
@@ -207,18 +207,16 @@ class ResolverHookImpl implements ResolverHook {
         for (String region : regions) {
             s.add(region);
 
-            if (configuration.globalRegionOrder != null) {
-                if (configuration.globalRegionOrder.contains(region)) {
-                    for (String r : configuration.globalRegionOrder) {
-                        if (r.equals(region)) {
-                            break;
-                        }
-                        s.add(r);
+            if (configuration.getGlobalRegionOrder().contains(region)) {
+                for (String r : configuration.getGlobalRegionOrder()) {
+                    if (r.equals(region)) {
+                        break;
                     }
-                } else {
-                    Activator.LOG.log(Level.WARNING, "Global API Region order " + configuration.globalRegionOrder +
-                            " does not contain region: " + region);
+                    s.add(r);
                 }
+            } else {
+                Activator.LOG.log(Level.WARNING, "Global API Region order " + configuration.getGlobalRegionOrder() +
+                        " does not contain region: " + region);
             }
         }
         return s;

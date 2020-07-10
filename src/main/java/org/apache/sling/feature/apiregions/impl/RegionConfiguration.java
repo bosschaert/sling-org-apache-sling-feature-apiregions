@@ -18,6 +18,9 @@
  */
 package org.apache.sling.feature.apiregions.impl;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Version;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -47,9 +50,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Version;
-
 class RegionConfiguration {
     private static final String BUNDLE_LOCATION_TO_FEATURE_FILE = "bundleLocationToFeature.properties";
     private static final String REGION_ORDER = "__region.order__";
@@ -68,7 +68,7 @@ class RegionConfiguration {
     private final Map<String, Set<String>> baseBundleFeatureMap;
     private final Map<String, LinkedHashSet<String>> baseFeatureRegionMap;
     private final Map<String, Set<String>> baseRegionPackageMap;
-    final LinkedHashSet<String> globalRegionOrder; // Insertion order is significant
+    private final List<String> globalRegionOrder;
 
     // This field stores the association between bundle location and the configuration
     // to be used. The configuration is based on bsn+version. If the bundle is updated
@@ -87,7 +87,8 @@ class RegionConfiguration {
         this.baseBundleFeatureMap = new HashMap<>(bundleFeatureMap);
         this.baseFeatureRegionMap = new HashMap<>(featureRegionMap);
         this.baseRegionPackageMap = new HashMap<>(regionPackageMap);
-        this.globalRegionOrder = this.baseFeatureRegionMap.remove(REGION_ORDER);
+        this.globalRegionOrder = new ArrayList<>(this.baseFeatureRegionMap.getOrDefault(REGION_ORDER, new LinkedHashSet<>()));
+        this.baseFeatureRegionMap.remove(REGION_ORDER);
 
         this.toGlobalConfig = null;
 
@@ -121,7 +122,8 @@ class RegionConfiguration {
         this.baseBundleFeatureMap = bfm;
         this.baseFeatureRegionMap = frm;
         this.baseRegionPackageMap = rpm;
-        this.globalRegionOrder = this.baseFeatureRegionMap.remove(REGION_ORDER);
+        this.globalRegionOrder = new ArrayList<>(this.baseFeatureRegionMap.getOrDefault(REGION_ORDER, new LinkedHashSet<>()));
+        this.baseFeatureRegionMap.remove(REGION_ORDER);
 
         this.toGlobalConfig = context.getProperty(RegionConstants.APIREGIONS_JOINGLOBAL);
         if ( this.toGlobalConfig != null ) {
@@ -448,6 +450,10 @@ class RegionConfiguration {
 
     public Set<String> getDefaultRegions() {
         return defaultRegions;
+    }
+
+    public List<String> getGlobalRegionOrder() {
+        return globalRegionOrder;
     }
 
     public Dictionary<String, Object> getRegistrationProperties() {

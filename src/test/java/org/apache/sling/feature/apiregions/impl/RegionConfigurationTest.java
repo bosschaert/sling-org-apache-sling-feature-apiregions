@@ -54,6 +54,7 @@ import static org.apache.sling.feature.apiregions.impl.RegionConstants.PROPERTIE
 import static org.apache.sling.feature.apiregions.impl.RegionConstants.PROPERTIES_RESOURCE_PREFIX;
 import static org.apache.sling.feature.apiregions.impl.RegionConstants.REGION_PACKAGE_FILENAME;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -491,6 +492,19 @@ public class RegionConfigurationTest {
         ArrayList<BundleCapability> expected = new ArrayList<>(Arrays.asList(cap1, cap2));
         assertEquals("Now b4 from the req should have visibility to both caps as b4 is now in the feature",
                 expected, caps2);
+    }
+
+    @Test
+    public void testRegionOrderProperty() throws Exception {
+        BundleContext ctx = Mockito.mock(BundleContext.class);
+        Mockito.when(ctx.getBundle()).thenReturn(Mockito.mock(Bundle.class));
+        Mockito.when(ctx.getProperty(PROPERTIES_FILE_LOCATION)).
+            thenReturn("classloader://props1");
+
+        RegionConfiguration re = new RegionConfiguration(ctx);
+        assertEquals(Arrays.asList("global", "internal"), re.getGlobalRegionOrder());
+        assertEquals(2, re.getFeatureRegionMap().size());
+        assertNull(re.getFeatureRegionMap().get("__region.order__"));
     }
 
     private BundleRequirement mockRequirement(String bsn, Version bver, BundleContext mockContext) {
